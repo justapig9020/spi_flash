@@ -1,6 +1,9 @@
 import cmd.py
 import spidev
 
+def is_flag_set(reg, flag):
+    return (reg|flag) == flag
+
 class spi_flash:
     def __init__(self, bus, dev_num):
         self.spi_dev = spidev.SpiDev ()
