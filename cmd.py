@@ -78,7 +78,7 @@ SR_BP2 = 0x10
 SR_BP1 = 0x08
 SR_BP0 = 0x04
 SR_WEL = 0x02
-SR_WIP - 0x01
+SR_WIP = 0x01
 
 # Configuration Register
 CR_DC1 = 0x80
