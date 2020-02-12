@@ -31,7 +31,9 @@ def set_write_enable (mem):
         sr1 = get_reg (mem, RSR1)
         if is_set_flag (sr1, SR1_BUSY) == False:
             break;
-    for i in range (10):
+        sleep (1)
+
+    for i in range (1000):
         mem.xfer ([WEN])
         sr1 = get_reg (mem, RSR1) 
         if is_set_flag (sr1, SR1_WEL):
@@ -59,16 +61,15 @@ def write (mem, addr, data):
     return True
 
 def read (mem, addr, size):
-    for i in range (10):
+    for i in range (1000):
         mem.xfer ([WDI])
         sr1 = get_reg (mem, RSR1) 
-        if is_set_flag (sr1, SR1_WEL) == False:
+        if is_set_flag (sr1, SR1_WEL | SR1_BUSY) == False:
             break
-
         # mem.xfer ([WDI])
         sleep (1)
 
-    if sr1 & SR1_WEL == SR1_WEL:
+    if is_set_flag (sr1, SR1_WEL | SR1_BUSY):
         return [0x00]
     else:
         send_buf = [RD]
