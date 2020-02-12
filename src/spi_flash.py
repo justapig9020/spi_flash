@@ -22,8 +22,8 @@ class spi_flash:
     def read(self, addr, size):
         for i in range(10):
             self.mem.xfer([WDI])
-            sr1 = self.get_reg(self.mem, RSR1) 
-            if self.is_set_flag(sr1, SR1_WEL | SR1_BUSY) == False:
+            sr1 = self.get_reg(RSR1) 
+            if is_set_flag(sr1, SR1_WEL | SR1_BUSY) == False:
                 break
             sleep(self.delay)
 
@@ -47,7 +47,7 @@ class spi_flash:
         ret = self.get_jid()
         mid = ret.pop(0)
         jid = ret
-        return mid == 0xEF && jid == [0x40, 0x16]
+        return mid == 0xEF and jid == [0x40, 0x16]
 
     def set_reg(self, cmd, val):
         self.mem.xfer(WENVSR)
@@ -70,14 +70,14 @@ class spi_flash:
 
     def set_write_enable(self):
         while True:
-            sr1 = self.get_reg(self.mem, RSR1)
+            sr1 = self.get_reg(RSR1)
             if is_set_flag(sr1, SR1_BUSY) == False:
                 break;
             sleep(self.delay)
 
         for i in range(10):
             self.mem.xfer([WEN])
-            sr1 = self.get_reg(self.mem, RSR1) 
+            sr1 = self.get_reg(RSR1) 
             if is_set_flag(sr1, SR1_WEL):
                 return True
             sleep(self.delay)
