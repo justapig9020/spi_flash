@@ -1,5 +1,6 @@
 from spi_flash import spi_flash
 import sys
+import traceback
 
 def test_func(mem, addr, data):
     if mem.chk_dev():
@@ -36,6 +37,7 @@ def test():
     try:
         addr = [0x1f, 0x00, 0x00]
         data = [0x09, 0x05, 0x02, 0x07]
+
         mem = spi_flash(0, 0)
         mem.setup(speed=1100000, mode=3)
 
@@ -51,9 +53,9 @@ def test():
         cl, exc, tb = sys.exc_info()
         last_call_stk = traceback.extract_tb(tb)[-1]
 
-        file_name = lastCallStack[0]
-        line_num = lastCallStack[1]
-        func_name = lastCallStack[2]
+        file_name = last_call_stk[0]
+        line_num = last_call_stk[1]
+        func_name = last_call_stk[2]
         print ("File: ", file_name, " line: ", line_num, " in function: ", func_name, ", ", err_cls, detail)
 
 if __name__ == "__main__":
