@@ -14,6 +14,10 @@ def test_func(mem, addr, data):
         mem.close()
         return False
 
+    if mem.erase(addr) == False:
+        print ("Erase failed")
+        return False
+
     if mem.write(addr, data):
         ret = mem.read(addr, len(data))
     else:
@@ -32,6 +36,8 @@ def test():
     data = [0x09, 0x05, 0x02, 0x07]
     mem = spi_flash(0, 0)
     mem.setup(speed=1100000, mode=3)
+
+    mem.reset()
 
     if test_func(mem, addr, data):
         print ("R/W test sucessed")
