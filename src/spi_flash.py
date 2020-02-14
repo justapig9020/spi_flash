@@ -2,24 +2,37 @@ import spidev
 import cmd as spi_cmd
 import time
 
+default_speed = 31250000
+default_mode = 0
+default_delay = 0.001
+
 def is_set_flag(reg, flag):
     return reg & flag == flag
 
 class spi_flash:
     mem = spidev.SpiDev()
-    delay = 0.5
+    delay = None
     bus = None
     dev_num = None
 
-    def __init__(self, bus, dev_num, speed = 1000000, mode = 0):
+    def __init__(self, bus, dev_num, speed=default_speed, mode=default_mode, delay=default_delay):
         self.bus = bus
         self.dev_num = dev_num
         self.mem.open(self.bus, self.dev_num)
-        self.setup(speed, mode)
+        self.setup(speed, mode, delay)
 
-    def setup(self, speed=1000000, mode=0):
+    def setup(self, speed=default_speed, mode=default_mode, delay=default_delay):
         self.mem.max_speed_hz = speed
         self.mem.mode = mode
+        self.delay = delay
+    
+    def prt_status(self):
+        print ("== SPI flash status ==")
+        print ("Bus: %d, Dev: %d"%(self.bus, self.dev_num))
+        print ("Speed: %dhz"%self.mem.max_speed_hz)
+        print ("mode: %d"%self.mem.mode)
+        print ("delay: %f"%self.delay)
+        print ("======================")
 
     def read(self, addr, size):
         for i in range(10):
@@ -105,6 +118,10 @@ class spi_flash:
         self.mem.xfer(send_buf)
         return True
 
+        mem.close()
     def reset(self):
         self.mem.xfer([0x66])
         self.mem.xfer([0x99])
+
+    def close(self):
+        self.mem.close()

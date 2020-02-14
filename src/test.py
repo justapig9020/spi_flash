@@ -1,4 +1,5 @@
-from spi_flash import spi_flash
+from spi_flash import spi_flash, default_speed, default_mode, default_delay
+import gpiozero
 import sys
 import traceback
 
@@ -13,7 +14,6 @@ def test_func(mem, addr, data):
         print()
     else:
         print ("Wrong device")
-        mem.close()
         return False
 
     if mem.erase(addr) == False:
@@ -24,7 +24,6 @@ def test_func(mem, addr, data):
         ret = mem.read(addr, len(data))
     else:
         print ("Write failed")
-        mem.close()
         return False
 
     if ret != data:
@@ -33,20 +32,26 @@ def test_func(mem, addr, data):
 
     return True
 
-def test():
+def test(spd=default_speed, dly=default_delay):
     try:
         addr = [0x1f, 0x00, 0x00]
         data = [0x09, 0x05, 0x02, 0x07]
+        
 
         mem = spi_flash(0, 0)
-        mem.setup(speed=1100000, mode=3)
-
+        mem.setup(speed=spd, mode=0, delay=dly)
+        mem.prt_status()
+        print ("Speed: %dhz"%mem.mem.max_speed_hz)
         mem.reset()
-
         if test_func(mem, addr, data):
             print ("R/W test sucessed")
+            return True
         else:
             print ("R/W test failed")
+            return False
+
+        mem.close()
+        mem = None
     except Exception as err:
         err_cls = err.__class__.__name__
         detail = err.args[0]
@@ -57,6 +62,7 @@ def test():
         line_num = last_call_stk[1]
         func_name = last_call_stk[2]
         print ("File: ", file_name, " line: ", line_num, " in function: ", func_name, ", ", err_cls, detail)
+        mem.close()
 
 if __name__ == "__main__":
     test()
