@@ -1,5 +1,4 @@
 from spi_flash import spi_flash, default_speed, default_mode, default_delay
-import gpiozero
 import sys
 import traceback
 
